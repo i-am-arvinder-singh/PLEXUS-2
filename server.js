@@ -60,6 +60,10 @@ app.get('/dashboard',(req,res)=>{
 
     heroRef.once('value',function(snapshot){
         // console.log(snapshot.val())
+        var data = snapshot.val()
+        if(!data){
+            data = {}
+        }
         res.render('dashboard.ejs',{heroFields:snapshot.val(), idCheck:currentUser.uid})
     })
 
@@ -77,6 +81,17 @@ app.post('/createForm',(req,res)=>{
     var email = req.body.inputEmail
     var password = req.body.inputPassword
     createNewUser(email, password,res);
+})
+
+app.post('/deleteHero',(req,res)=>{
+    // console.log(req);
+    var heroID = req.body.heroID
+    console.log(heroID)
+    console.log('------------')
+    console.log(currentUser)
+    // firebase.database().ref("heros/" + heroID).remove();
+    // firebase.database().ref("users/" + currentUser.uid + "/heros/" + heroID).remove();
+    res.redirect('/dashboard')
 })
 
 function addHeroToDatabase(h,res) {
@@ -160,7 +175,7 @@ firebase.auth().onAuthStateChanged(function (user) {
 function signIn(email, password,res) {
     firebase.auth().signInWithEmailAndPassword(email, password)
     .then(function(){
-        res.redirect('/dashboard')
+        res.redirect('/')
     })
     
     .catch(function (error) {

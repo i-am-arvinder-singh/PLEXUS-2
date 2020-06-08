@@ -91,17 +91,20 @@
     <!-- Show heros here -->
     <hr>
     <ul>
-        <div class="container" id="show-heros">
-            <% var keys = Object.keys(heroFields) %>
-            <% keys.forEach(function(key){if(idCheck==heroFields[key].owner){%>
-            <li>Name: <span class='hero-data-name'><%= heroFields[key].name %></span></li>
-            <li>Feel: <span class='hero-data-name'><%= heroFields[key].feel %></span></li>
-            <li>Age: <span class='hero-data-name'><%= heroFields[key].age %></span></li>
-            <!-- <li><%=idCheck %><span class='hero-data-name'><%= heroFields[key].owner %></span></li> -->
-            <button type='button' class='btn btn-danger delete-hero' id=''>Delete Me</button>
-            <button type='button' class='btn btn-primary edit-hero-button' data-heroid='' data-toggle='modal' data-target='#editHero'>Edit</button>
-            <% }})%>
-        </div>
+        <form method="POST">
+            <div class="container" id="show-heros">
+                <% var keys = Object.keys(heroFields) %>
+                <% for ( var i=0 ; i < keys.length ; i++ ) {if(idCheck==heroFields[keys[i]].owner){ %>
+                    <% console.log(keys[i]) %>
+                <li>Name: <span class='hero-data-name'><%= heroFields[keys[i]].name %></span></li>
+                <li>Feel: <span class='hero-data-name'><%= heroFields[keys[i]].feel %></span></li>
+                <li>Age: <span class='hero-data-name'><%= heroFields[keys[i]].age %></span></li>
+                <button type='button' formaction="/deleteHero" class='btn btn-danger delete-hero' id=' <%= keys[i] %>  '>Delete Me</button>
+                <button type='button' class='btn btn-primary edit-hero-button' data-heroid='  <%= keys[i] %> ' data-toggle='modal'
+                    data-target='#editHero'>Edit</button>
+                <% }} %>
+            </div>
+        </form>
     </ul>
 
     <!-- heroHTMLitem += "<div class'heroHTMLitem'><hr><ul>";
@@ -183,10 +186,12 @@
         $(document).on("click", ".delete-hero", function () {
             console.log("aioansign")
             var heroID = $(this).attr('id');
+            console.log('Mene bola Hey!')
             console.log(heroID)
+            console.log(currentUser)
             //Firebase method to delete
-            firebase.database().ref("heros/" + heroID).remove();
-            firebase.database().ref("users/" + currentUser.uid + "/heros/" + heroID).remove();
+            // firebase.database().ref("heros/" + heroID).remove();
+            // firebase.database().ref("users/" + currentUser.uid + "/heros/" + heroID).remove();
 
         })
 
