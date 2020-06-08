@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express')
 const logger = require('morgan')
 const bodyParser = require('body-parser')
@@ -6,14 +7,14 @@ const alert = require('alert-node')
 
 // Your web app's Firebase configuration
 var firebaseConfig = {
-    apiKey: "AIzaSyCxYNf9DxOMuVset5qGImWgdG6CLMdEJ40",
+    apiKey: process.env.API_KEY,
     authDomain: "cloud-trek.firebaseapp.com",
     databaseURL: "https://cloud-trek.firebaseio.com",
     projectId: "cloud-trek",
     storageBucket: "cloud-trek.appspot.com",
-    messagingSenderId: "1003051514632",
-    appId: "1:1003051514632:web:e81016218688226c8f8abd",
-    measurementId: "G-YZH2YN6G02"
+    messagingSenderId: process.env.MSG_ID,
+    appId: process.env.APP_ID,
+    measurementId: process.env.MEASUREMENT_ID
 };
 // Initialize Firebase
 firebase.initializeApp(firebaseConfig);
