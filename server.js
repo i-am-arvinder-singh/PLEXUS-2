@@ -92,7 +92,14 @@ app.post('/createForm', (req, res) => {
     // console.log(req);
     var email = req.body.inputEmail
     var password = req.body.inputPassword
-    createNewUser(email, password, res);
+    var cnfPassword = req.body.inputPasswordCnf
+    if(password===cnfPassword){
+        createNewUser(email, password, res);
+    }
+    else{
+        alert('Please try again!')
+        res.redirect('/')
+    }
 })
 
 app.post('/deleteHero', (req, res) => {
@@ -109,7 +116,7 @@ app.post('/deleteHero', (req, res) => {
 function addHeroToDatabase(h, res) {
     firebase.database().ref('heros/' + h.id).set(h)
     firebase.database().ref('users/' + currentUser.uid + '/heros/' + h.id).set(h)
-    alert('Data Saved!')
+    // alert('Data Saved!')
     res.redirect('/dashboard')
 }
 
@@ -118,8 +125,8 @@ app.post('/newHeroSubmitButton', (req, res) => {
         id: req.body.inputHeroName + Date.now(),
         owner: currentUser.uid,
         name: req.body.inputHeroName,
-        feel: req.body.feel,
-        age: req.body.age
+        // feel: req.body.feel,
+        // age: req.body.age
     }
 
     console.log(hero)
