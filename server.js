@@ -27,63 +27,74 @@ require("firebase/database");
 const app = express()
 
 app.set('view engine', 'ejs')
-app.set('views',__dirname+'/views')
+app.set('views', __dirname + '/views')
 
 //For static files such as CSS and images
 app.use(express.static('views'))
 
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended: false}))
+app.use(bodyParser.urlencoded({ extended: false }))
 
 app.use(logger('dev'))
 
-app.get('/',(req,res)=>{
+app.get('/', (req, res) => {
 
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
         if (user) {
-            
+
             res.redirect('/dashboard')
-          // User is signed in.
+            // User is signed in.
         } else {
             res.render('index.ejs')
-          // No user is signed in.
+            // No user is signed in.
         }
-      });
-      
+    });
 
-    
-})
 
-app.get('/dashboard',(req,res)=>{
-
-    var heroRef = firebase.database().ref().child("heros");
-
-    heroRef.once('value',function(snapshot){
-        // console.log(snapshot.val())
-        var data = snapshot.val()
-        if(!data){
-            data = {}
-        }
-        res.render('dashboard.ejs',{heroFields:snapshot.val(), idCheck:currentUser.uid})
-    })
 
 })
 
-app.post('/signIn',(req,res)=>{
+app.get('/dashboard', (req, res) => {
+
+
+    firebase.auth().onAuthStateChanged(function (user) {
+        if (user) {
+            var heroRef = firebase.database().ref().child("heros");
+
+            heroRef.once('value', function (snapshot) {
+                // console.log(snapshot.val())
+                var data = snapshot.val()
+                if (!data) {
+                    data = {}
+                }
+                res.render('dashboard.ejs', { heroFields: snapshot.val(), idCheck: currentUser.uid })
+            })
+            // User is signed in.
+        } else {
+            res.redirect('/')
+            // No user is signed in.
+        }
+    });
+
+
+
+})
+
+app.post('/signIn', (req, res) => {
     // console.log(req);
     var email = req.body.inputEmail
     var password = req.body.inputPassword
-    signIn(email, password,res);
+    signIn(email, password, res);
 })
 
-app.post('/createForm',(req,res)=>{
+app.post('/createForm', (req, res) => {
     // console.log(req);
     var email = req.body.inputEmail
     var password = req.body.inputPassword
-    createNewUser(email, password,res);
+    createNewUser(email, password, res);
 })
 
-app.post('/deleteHero',(req,res)=>{
+app.post('/deleteHero', (req, res) => {
     // console.log(req);
     var heroID = req.body.heroID
     console.log(heroID)
@@ -94,14 +105,14 @@ app.post('/deleteHero',(req,res)=>{
     res.redirect('/dashboard')
 })
 
-function addHeroToDatabase(h,res) {
+function addHeroToDatabase(h, res) {
     firebase.database().ref('heros/' + h.id).set(h)
     firebase.database().ref('users/' + currentUser.uid + '/heros/' + h.id).set(h)
     alert('Data Saved!')
     res.redirect('/dashboard')
 }
 
-app.post('/newHeroSubmitButton',(req,res)=>{
+app.post('/newHeroSubmitButton', (req, res) => {
     var hero = {
         id: req.body.inputHeroName + Date.now(),
         owner: currentUser.uid,
@@ -111,45 +122,45 @@ app.post('/newHeroSubmitButton',(req,res)=>{
     }
 
     console.log(hero)
-    
-    addHeroToDatabase(hero,res);
 
-    
+    addHeroToDatabase(hero, res);
+
+
 })
 
 
-function createNewUser(email, password,res) {
+function createNewUser(email, password, res) {
     firebase.auth().createUserWithEmailAndPassword(email, password)
-    .then(()=>{
-        alert('Account Created!')
-        res.redirect('/dashboard')
-    })
-    
-    .catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorMessage);
+        .then(() => {
+            alert('Account Created!')
+            res.redirect('/dashboard')
+        })
 
-    });
+        .catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log(errorMessage);
+
+        });
 
 
 
 }
 
-app.post('/home',(req,res)=>{
-        // console.log("We are here!");
-        firebase.auth().signOut()
-            .then(function () {
-                // Sign-out successful.
-                alert('SignOut Successful!')
-                console.log("SignOut Successful!");
-                res.redirect('/');
-            })
-            .catch(function (error) {
-                // An error happened
-                console.log(error);
-            });
+app.post('/home', (req, res) => {
+    // console.log("We are here!");
+    firebase.auth().signOut()
+        .then(function () {
+            // Sign-out successful.
+            alert('SignOut Successful!')
+            console.log("SignOut Successful!");
+            res.redirect('/');
+        })
+        .catch(function (error) {
+            // An error happened
+            console.log(error);
+        });
 })
 
 function writeUserData(user) {
@@ -172,25 +183,25 @@ firebase.auth().onAuthStateChanged(function (user) {
     }
 });
 
-function signIn(email, password,res) {
+function signIn(email, password, res) {
     firebase.auth().signInWithEmailAndPassword(email, password)
-    .then(function(){
-        res.redirect('/')
-    })
-    
-    .catch(function (error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        console.log(errorMessage);
-        alert('Please check your Username and Password')
-        // res.send("<html><script>alert('Please check your Username and Password!')</script></html>")
-        res.redirect('/');
-    });
+        .then(function () {
+            res.redirect('/')
+        })
+
+        .catch(function (error) {
+            // Handle Errors here.
+            var errorCode = error.code;
+            var errorMessage = error.message;
+            console.log(errorMessage);
+            alert('Please check your Username and Password')
+            // res.send("<html><script>alert('Please check your Username and Password!')</script></html>")
+            res.redirect('/');
+        });
 }
 
 var port = process.env.PORT || 8080
 
-app.listen(port,()=>{
-    console.log('Server is running on port '+port)
+app.listen(port, () => {
+    console.log('Server is running on port ' + port)
 })
