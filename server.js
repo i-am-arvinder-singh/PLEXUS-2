@@ -62,13 +62,15 @@ app.get('/dashboard', (req, res) => {
         if (user) {
             var heroRef = firebase.database().ref().child("heros");
 
-            heroRef.once('value', function (snapshot) {
-                // console.log(snapshot.val())
+            heroRef.once('value').then((snapshot)=>{
                 var data = snapshot.val()
                 if (!data) {
                     data = {}
                 }
                 res.render('dashboard.ejs', { heroFields: snapshot.val(), idCheck: currentUser.uid })
+            })
+            .catch((e)=>{
+                console.log(e)
             })
             // User is signed in.
         } else {
