@@ -182,10 +182,12 @@ body {
   .cb{
     margin-top: 200px;
     margin-bottom: 140px;
+    /* overflow: scroll; */
   }
   
   .chat-panel{
    height: 500px; 
+   overflow: scroll;
   }
     
   }
